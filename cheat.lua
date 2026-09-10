@@ -1,5 +1,5 @@
 --==============================================================
--- CYBER ADMIN HUB
+-- CYBER ADMIN HUb
 -- Roblox Studio / Luau
 -- LocalScript -> StarterPlayer > StarterPlayerScripts
 -- OPEN / CLOSE: 0
