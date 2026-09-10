@@ -1,5 +1,5 @@
 --==============================================================
--- CYBER ADMIN HUb
+-- CYBER ADMIN HUB
 -- Roblox Studio / Luau
 -- LocalScript -> StarterPlayer > StarterPlayerScripts
 -- OPEN / CLOSE: 0
@@ -15,7 +15,6 @@ local Workspace = game:GetService("Workspace")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
-
 local Camera = Workspace.CurrentCamera
 
 --==============================================================
@@ -66,9 +65,91 @@ local Config = {
 
 	SpinBot = false,
 	SpinSpeed = 10,
+
+	-- GUI SETTINGS
+	GUITheme = "Cyber",
+	GUITransparency = 0,
+	GUITextBrightness = 1,
 }
 
 _G.CyberAdminConfig = Config
+
+--==============================================================
+-- GUI THEMES
+--==============================================================
+
+local Themes = {
+
+	Cyber = {
+		Main = Color3.fromRGB(8, 10, 17),
+		Header = Color3.fromRGB(13, 17, 27),
+		Sidebar = Color3.fromRGB(11, 14, 23),
+		Button = Color3.fromRGB(18, 22, 34),
+		ButtonHover = Color3.fromRGB(25, 43, 58),
+		TabActive = Color3.fromRGB(0, 105, 140),
+		Accent = Color3.fromRGB(0, 220, 255),
+		Text = Color3.fromRGB(225, 230, 240),
+		SubText = Color3.fromRGB(120, 135, 155),
+		Border = Color3.fromRGB(0, 210, 255),
+		SwitchOff = Color3.fromRGB(48, 52, 65),
+	},
+
+	Purple = {
+		Main = Color3.fromRGB(12, 8, 20),
+		Header = Color3.fromRGB(20, 12, 32),
+		Sidebar = Color3.fromRGB(16, 10, 26),
+		Button = Color3.fromRGB(28, 18, 42),
+		ButtonHover = Color3.fromRGB(52, 30, 72),
+		TabActive = Color3.fromRGB(105, 45, 160),
+		Accent = Color3.fromRGB(190, 90, 255),
+		Text = Color3.fromRGB(235, 225, 245),
+		SubText = Color3.fromRGB(155, 135, 175),
+		Border = Color3.fromRGB(190, 90, 255),
+		SwitchOff = Color3.fromRGB(58, 48, 68),
+	},
+
+	Red = {
+		Main = Color3.fromRGB(18, 7, 9),
+		Header = Color3.fromRGB(30, 10, 14),
+		Sidebar = Color3.fromRGB(24, 8, 12),
+		Button = Color3.fromRGB(40, 14, 20),
+		ButtonHover = Color3.fromRGB(70, 22, 30),
+		TabActive = Color3.fromRGB(145, 35, 50),
+		Accent = Color3.fromRGB(255, 65, 85),
+		Text = Color3.fromRGB(245, 225, 230),
+		SubText = Color3.fromRGB(175, 135, 145),
+		Border = Color3.fromRGB(255, 65, 85),
+		SwitchOff = Color3.fromRGB(68, 48, 52),
+	},
+
+	Green = {
+		Main = Color3.fromRGB(6, 15, 10),
+		Header = Color3.fromRGB(9, 25, 16),
+		Sidebar = Color3.fromRGB(7, 20, 12),
+		Button = Color3.fromRGB(13, 34, 21),
+		ButtonHover = Color3.fromRGB(22, 58, 35),
+		TabActive = Color3.fromRGB(20, 125, 70),
+		Accent = Color3.fromRGB(55, 255, 135),
+		Text = Color3.fromRGB(220, 245, 230),
+		SubText = Color3.fromRGB(125, 165, 140),
+		Border = Color3.fromRGB(55, 255, 135),
+		SwitchOff = Color3.fromRGB(45, 65, 52),
+	},
+
+	Orange = {
+		Main = Color3.fromRGB(18, 11, 5),
+		Header = Color3.fromRGB(30, 18, 8),
+		Sidebar = Color3.fromRGB(24, 14, 6),
+		Button = Color3.fromRGB(42, 24, 10),
+		ButtonHover = Color3.fromRGB(70, 40, 14),
+		TabActive = Color3.fromRGB(170, 85, 20),
+		Accent = Color3.fromRGB(255, 155, 40),
+		Text = Color3.fromRGB(245, 235, 220),
+		SubText = Color3.fromRGB(175, 150, 120),
+		Border = Color3.fromRGB(255, 155, 40),
+		SwitchOff = Color3.fromRGB(68, 58, 45),
+	},
+}
 
 --==============================================================
 -- CHARACTER
@@ -86,7 +167,9 @@ local function updateCharacter()
 	end
 
 	Character = char
+
 	Humanoid = char:FindFirstChildOfClass("Humanoid")
+
 	Root = char:FindFirstChild("HumanoidRootPart")
 
 	if not Humanoid then
@@ -101,9 +184,23 @@ end
 updateCharacter()
 
 Player.CharacterAdded:Connect(function(char)
+
 	Character = char
+
 	Humanoid = char:WaitForChild("Humanoid", 5)
 	Root = char:WaitForChild("HumanoidRootPart", 5)
+
+	task.wait(0.2)
+
+	if Config.Fly and Root then
+		Config.Fly = false
+	end
+
+	if Humanoid then
+		Humanoid.WalkSpeed = 16
+		Humanoid.UseJumpPower = true
+		Humanoid.JumpPower = 50
+	end
 end)
 
 Workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
@@ -140,9 +237,10 @@ local Main = Instance.new("Frame")
 Main.Name = "Main"
 Main.Size = UDim2.fromOffset(850, 540)
 Main.Position = UDim2.new(0.5, -425, 0.5, -270)
-Main.BackgroundColor3 = Color3.fromRGB(8, 10, 17)
+Main.BackgroundColor3 = Themes.Cyber.Main
+Main.BackgroundTransparency = 0
 Main.BorderSizePixel = 0
-Main.Visible = true
+Main.Visible = false
 Main.ZIndex = 10
 Main.Parent = ScreenGui
 
@@ -151,7 +249,7 @@ MainCorner.CornerRadius = UDim.new(0, 14)
 MainCorner.Parent = Main
 
 local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(0, 210, 255)
+MainStroke.Color = Themes.Cyber.Border
 MainStroke.Thickness = 1.5
 MainStroke.Parent = Main
 
@@ -162,7 +260,7 @@ MainStroke.Parent = Main
 local Header = Instance.new("Frame")
 Header.Name = "Header"
 Header.Size = UDim2.new(1, 0, 0, 65)
-Header.BackgroundColor3 = Color3.fromRGB(13, 17, 27)
+Header.BackgroundColor3 = Themes.Cyber.Header
 Header.BorderSizePixel = 0
 Header.ZIndex = 11
 Header.Parent = Main
@@ -178,7 +276,7 @@ Title.Size = UDim2.fromOffset(400, 30)
 Title.Font = Enum.Font.GothamBold
 Title.Text = "CYBER"
 Title.TextSize = 24
-Title.TextColor3 = Color3.fromRGB(0, 225, 255)
+Title.TextColor3 = Themes.Cyber.Accent
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.ZIndex = 12
 Title.Parent = Header
@@ -190,7 +288,7 @@ Subtitle.Size = UDim2.fromOffset(500, 18)
 Subtitle.Font = Enum.Font.Gotham
 Subtitle.Text = "ADMIN / DEBUG HUB  •  PRESS 0"
 Subtitle.TextSize = 11
-Subtitle.TextColor3 = Color3.fromRGB(120, 135, 155)
+Subtitle.TextColor3 = Themes.Cyber.SubText
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 Subtitle.ZIndex = 12
 Subtitle.Parent = Header
@@ -198,7 +296,7 @@ Subtitle.Parent = Header
 local Close = Instance.new("TextButton")
 Close.Size = UDim2.fromOffset(38, 38)
 Close.Position = UDim2.new(1, -50, 0, 13)
-Close.BackgroundColor3 = Color3.fromRGB(25, 29, 42)
+Close.BackgroundColor3 = Themes.Cyber.Button
 Close.BorderSizePixel = 0
 Close.Text = "×"
 Close.Font = Enum.Font.GothamBold
@@ -224,7 +322,7 @@ local Sidebar = Instance.new("Frame")
 Sidebar.Name = "Sidebar"
 Sidebar.Position = UDim2.fromOffset(12, 77)
 Sidebar.Size = UDim2.fromOffset(170, 450)
-Sidebar.BackgroundColor3 = Color3.fromRGB(11, 14, 23)
+Sidebar.BackgroundColor3 = Themes.Cyber.Sidebar
 Sidebar.BorderSizePixel = 0
 Sidebar.ZIndex = 11
 Sidebar.Parent = Main
@@ -268,12 +366,12 @@ local function createTab(tabName)
 	local Button = Instance.new("TextButton")
 	Button.Name = tabName .. "Button"
 	Button.Size = UDim2.new(1, 0, 0, 42)
-	Button.BackgroundColor3 = Color3.fromRGB(17, 21, 32)
+	Button.BackgroundColor3 = Themes.Cyber.Button
 	Button.BorderSizePixel = 0
 	Button.Text = tabName
 	Button.Font = Enum.Font.GothamMedium
 	Button.TextSize = 13
-	Button.TextColor3 = Color3.fromRGB(155, 165, 180)
+	Button.TextColor3 = Themes.Cyber.SubText
 	Button.AutoButtonColor = false
 	Button.ZIndex = 12
 	Button.Parent = Sidebar
@@ -288,7 +386,7 @@ local function createTab(tabName)
 	Page.BackgroundTransparency = 1
 	Page.BorderSizePixel = 0
 	Page.ScrollBarThickness = 3
-	Page.ScrollBarImageColor3 = Color3.fromRGB(0, 210, 255)
+	Page.ScrollBarImageColor3 = Themes.Cyber.Accent
 	Page.CanvasSize = UDim2.new(0, 0, 0, 0)
 	Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	Page.Visible = false
@@ -315,12 +413,13 @@ local function createTab(tabName)
 		end
 
 		for name, btn in pairs(Buttons) do
+
 			if name == tabName then
-				btn.BackgroundColor3 = Color3.fromRGB(0, 105, 140)
+				btn.BackgroundColor3 = Themes[Config.GUITheme].TabActive
 				btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 			else
-				btn.BackgroundColor3 = Color3.fromRGB(17, 21, 32)
-				btn.TextColor3 = Color3.fromRGB(155, 165, 180)
+				btn.BackgroundColor3 = Themes[Config.GUITheme].Button
+				btn.TextColor3 = Themes[Config.GUITheme].SubText
 			end
 		end
 	end)
@@ -340,6 +439,13 @@ local Settings = createTab("Settings")
 -- UI HELPERS
 --==============================================================
 
+local UIObjects = {
+	Sections = {},
+	Buttons = {},
+	Toggles = {},
+	Sliders = {},
+}
+
 local function createSection(parent, text)
 
 	local Label = Instance.new("TextLabel")
@@ -348,10 +454,12 @@ local function createSection(parent, text)
 	Label.Text = "  " .. text
 	Label.Font = Enum.Font.GothamBold
 	Label.TextSize = 13
-	Label.TextColor3 = Color3.fromRGB(0, 220, 255)
+	Label.TextColor3 = Themes.Cyber.Accent
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 	Label.ZIndex = 13
 	Label.Parent = parent
+
+	table.insert(UIObjects.Sections, Label)
 
 	return Label
 end
@@ -360,12 +468,12 @@ local function createButton(parent, text, callback)
 
 	local Button = Instance.new("TextButton")
 	Button.Size = UDim2.new(1, 0, 0, 40)
-	Button.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
+	Button.BackgroundColor3 = Themes.Cyber.Button
 	Button.BorderSizePixel = 0
 	Button.Text = text
 	Button.Font = Enum.Font.GothamMedium
 	Button.TextSize = 13
-	Button.TextColor3 = Color3.fromRGB(225, 230, 240)
+	Button.TextColor3 = Themes.Cyber.Text
 	Button.AutoButtonColor = false
 	Button.ZIndex = 13
 	Button.Parent = parent
@@ -375,16 +483,18 @@ local function createButton(parent, text, callback)
 	Corner.Parent = Button
 
 	Button.MouseEnter:Connect(function()
-		Button.BackgroundColor3 = Color3.fromRGB(25, 43, 58)
+		Button.BackgroundColor3 = Themes[Config.GUITheme].ButtonHover
 	end)
 
 	Button.MouseLeave:Connect(function()
-		Button.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
+		Button.BackgroundColor3 = Themes[Config.GUITheme].Button
 	end)
 
 	Button.MouseButton1Click:Connect(function()
 		pcallSafe(callback)
 	end)
+
+	table.insert(UIObjects.Buttons, Button)
 
 	return Button
 end
@@ -395,7 +505,7 @@ local function createToggle(parent, text, initial, callback)
 
 	local Button = Instance.new("TextButton")
 	Button.Size = UDim2.new(1, 0, 0, 42)
-	Button.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
+	Button.BackgroundColor3 = Themes.Cyber.Button
 	Button.BorderSizePixel = 0
 	Button.Text = ""
 	Button.AutoButtonColor = false
@@ -413,7 +523,7 @@ local function createToggle(parent, text, initial, callback)
 	Label.Text = text
 	Label.Font = Enum.Font.GothamMedium
 	Label.TextSize = 13
-	Label.TextColor3 = Color3.fromRGB(220, 225, 235)
+	Label.TextColor3 = Themes.Cyber.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 	Label.ZIndex = 14
 	Label.Parent = Button
@@ -440,45 +550,53 @@ local function createToggle(parent, text, initial, callback)
 	DotCorner.CornerRadius = UDim.new(1, 0)
 	DotCorner.Parent = Dot
 
-	local function refresh()
+	local function refresh(runCallback)
 
 		if State then
-			Switch.BackgroundColor3 = Color3.fromRGB(0, 155, 195)
+			Switch.BackgroundColor3 = Themes[Config.GUITheme].Accent
 			Dot.BackgroundColor3 = Color3.fromRGB(235, 255, 255)
 			Dot.Position = UDim2.fromOffset(21, 2)
 		else
-			Switch.BackgroundColor3 = Color3.fromRGB(48, 52, 65)
+			Switch.BackgroundColor3 = Themes[Config.GUITheme].SwitchOff
 			Dot.BackgroundColor3 = Color3.fromRGB(135, 140, 155)
 			Dot.Position = UDim2.fromOffset(2, 2)
 		end
 
-		pcallSafe(callback, State)
+		if runCallback then
+			pcallSafe(callback, State)
+		end
 	end
 
 	Button.MouseButton1Click:Connect(function()
 		State = not State
-		refresh()
+		refresh(true)
 	end)
 
-	refresh()
+	refresh(false)
 
-	return {
-		Set = function(value)
-			State = value
-			refresh()
+	local object = {
+		Set = function(value, fireCallback)
+			State = value == true
+			refresh(fireCallback == true)
 		end,
 
 		Get = function()
 			return State
-		end
+		end,
+
+		Button = Button,
 	}
+
+	table.insert(UIObjects.Toggles, object)
+
+	return object
 end
 
 local function createSlider(parent, text, minimum, maximum, default, callback)
 
 	local Holder = Instance.new("Frame")
 	Holder.Size = UDim2.new(1, 0, 0, 60)
-	Holder.BackgroundColor3 = Color3.fromRGB(18, 22, 34)
+	Holder.BackgroundColor3 = Themes.Cyber.Button
 	Holder.BorderSizePixel = 0
 	Holder.ZIndex = 13
 	Holder.Parent = parent
@@ -494,7 +612,7 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 	Label.Text = text
 	Label.Font = Enum.Font.GothamMedium
 	Label.TextSize = 12
-	Label.TextColor3 = Color3.fromRGB(210, 215, 225)
+	Label.TextColor3 = Themes.Cyber.Text
 	Label.TextXAlignment = Enum.TextXAlignment.Left
 	Label.ZIndex = 14
 	Label.Parent = Holder
@@ -506,7 +624,7 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 	Value.Text = tostring(default)
 	Value.Font = Enum.Font.GothamBold
 	Value.TextSize = 12
-	Value.TextColor3 = Color3.fromRGB(0, 220, 255)
+	Value.TextColor3 = Themes.Cyber.Accent
 	Value.TextXAlignment = Enum.TextXAlignment.Right
 	Value.ZIndex = 14
 	Value.Parent = Holder
@@ -528,7 +646,7 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 		math.clamp((default - minimum) / (maximum - minimum), 0, 1),
 		1
 	)
-	Fill.BackgroundColor3 = Color3.fromRGB(0, 205, 240)
+	Fill.BackgroundColor3 = Themes.Cyber.Accent
 	Fill.BorderSizePixel = 0
 	Fill.ZIndex = 15
 	Fill.Parent = Bar
@@ -540,7 +658,7 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 	local Dragging = false
 	local Current = default
 
-	local function setValue(mouseX)
+	local function setValue(mouseX, fireCallback)
 
 		local percent = math.clamp(
 			(mouseX - Bar.AbsolutePosition.X)
@@ -560,14 +678,16 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 		Fill.Size = UDim2.fromScale(percent, 1)
 		Value.Text = tostring(Current)
 
-		pcallSafe(callback, Current)
+		if fireCallback then
+			pcallSafe(callback, Current)
+		end
 	end
 
 	Bar.InputBegan:Connect(function(input)
 
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			Dragging = true
-			setValue(input.Position.X)
+			setValue(input.Position.X, true)
 		end
 	end)
 
@@ -576,7 +696,7 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 		if Dragging
 			and input.UserInputType == Enum.UserInputType.MouseMovement then
 
-			setValue(input.Position.X)
+			setValue(input.Position.X, true)
 		end
 	end)
 
@@ -587,12 +707,12 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 		end
 	end)
 
-	return {
+	local object = {
 		Get = function()
 			return Current
 		end,
 
-		Set = function(value)
+		Set = function(value, fireCallback)
 
 			Current = math.clamp(value, minimum, maximum)
 
@@ -603,9 +723,118 @@ local function createSlider(parent, text, minimum, maximum, default, callback)
 			Fill.Size = UDim2.fromScale(percent, 1)
 			Value.Text = tostring(Current)
 
-			pcallSafe(callback, Current)
-		end
+			if fireCallback then
+				pcallSafe(callback, Current)
+			end
+		end,
+
+		Holder = Holder,
+		Label = Label,
+		Value = Value,
+		Fill = Fill,
+		Bar = Bar,
 	}
+
+	table.insert(UIObjects.Sliders, object)
+
+	return object
+end
+
+--==============================================================
+-- APPLY GUI THEME
+--==============================================================
+
+local function applyTheme()
+
+	local Theme = Themes[Config.GUITheme]
+
+	if not Theme then
+		Config.GUITheme = "Cyber"
+		Theme = Themes.Cyber
+	end
+
+	-- MAIN
+	Main.BackgroundColor3 = Theme.Main
+	Main.BackgroundTransparency = Config.GUITransparency
+
+	MainStroke.Color = Theme.Border
+
+	-- HEADER
+	Header.BackgroundColor3 = Theme.Header
+	Title.TextColor3 = Theme.Accent
+	Subtitle.TextColor3 = Theme.SubText
+	Close.BackgroundColor3 = Theme.Button
+
+	-- SIDEBAR
+	Sidebar.BackgroundColor3 = Theme.Sidebar
+
+	-- TABS
+	for name, Button in pairs(Buttons) do
+
+		Button.TextColor3 = Theme.SubText
+
+		if Pages[name].Visible then
+			Button.BackgroundColor3 = Theme.TabActive
+			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+		else
+			Button.BackgroundColor3 = Theme.Button
+		end
+	end
+
+	-- SECTIONS
+	for _, section in ipairs(UIObjects.Sections) do
+		if section and section.Parent then
+			section.TextColor3 = Theme.Accent
+		end
+	end
+
+	-- BUTTONS
+	for _, button in ipairs(UIObjects.Buttons) do
+
+		if button and button.Parent then
+			button.BackgroundColor3 = Theme.Button
+			button.TextColor3 = Theme.Text
+		end
+	end
+
+	-- TOGGLES
+	for _, toggle in ipairs(UIObjects.Toggles) do
+
+		if toggle.Button and toggle.Button.Parent then
+
+			toggle.Button.BackgroundColor3 = Theme.Button
+
+			local switch = toggle.Button:FindFirstChildOfClass("Frame")
+
+			if switch then
+				switch.BackgroundColor3 = Theme.SwitchOff
+			end
+
+			for _, child in ipairs(toggle.Button:GetChildren()) do
+
+				if child:IsA("TextLabel") then
+					child.TextColor3 = Theme.Text
+				end
+			end
+		end
+	end
+
+	-- SLIDERS
+	for _, slider in ipairs(UIObjects.Sliders) do
+
+		if slider.Holder and slider.Holder.Parent then
+
+			slider.Holder.BackgroundColor3 = Theme.Button
+			slider.Label.TextColor3 = Theme.Text
+			slider.Value.TextColor3 = Theme.Accent
+			slider.Fill.BackgroundColor3 = Theme.Accent
+		end
+	end
+
+	-- FOV
+	if FOVStroke then
+		FOVStroke.Color = Theme.Accent
+	end
 end
 
 --==============================================================
@@ -614,13 +843,23 @@ end
 
 createSection(Combat, "AIM ASSIST")
 
-createToggle(Combat, "Aim Assist", false, function(value)
-	Config.AimAssist = value
-end)
+createToggle(
+	Combat,
+	"Aim Assist",
+	false,
+	function(value)
+		Config.AimAssist = value
+	end
+)
 
-createToggle(Combat, "Wall Check", true, function(value)
-	Config.WallCheck = value
-end)
+createToggle(
+	Combat,
+	"Wall Check",
+	true,
+	function(value)
+		Config.WallCheck = value
+	end
+)
 
 createSlider(
 	Combat,
@@ -667,7 +906,7 @@ FOVCorner.CornerRadius = UDim.new(1, 0)
 FOVCorner.Parent = FOVCircle
 
 local FOVStroke = Instance.new("UIStroke")
-FOVStroke.Color = Color3.fromRGB(0, 220, 255)
+FOVStroke.Color = Themes.Cyber.Accent
 FOVStroke.Thickness = 1
 FOVStroke.Transparency = 0.2
 FOVStroke.Parent = FOVCircle
@@ -678,21 +917,41 @@ FOVStroke.Parent = FOVCircle
 
 createSection(Visuals, "VISUAL ESP")
 
-createToggle(Visuals, "ESP / Highlight", false, function(value)
-	Config.ESP = value
-end)
+createToggle(
+	Visuals,
+	"ESP / Highlight",
+	false,
+	function(value)
+		Config.ESP = value
+	end
+)
 
-createToggle(Visuals, "Names", true, function(value)
-	Config.ESPNames = value
-end)
+createToggle(
+	Visuals,
+	"Names",
+	true,
+	function(value)
+		Config.ESPNames = value
+	end
+)
 
-createToggle(Visuals, "Distance", true, function(value)
-	Config.ESPDistance = value
-end)
+createToggle(
+	Visuals,
+	"Distance",
+	true,
+	function(value)
+		Config.ESPDistance = value
+	end
+)
 
-createToggle(Visuals, "Health", true, function(value)
-	Config.ESPHealth = value
-end)
+createToggle(
+	Visuals,
+	"Health",
+	true,
+	function(value)
+		Config.ESPHealth = value
+	end
+)
 
 --==============================================================
 -- ESP
@@ -737,39 +996,37 @@ local function createESP(model)
 		return
 	end
 
-	local humanoid = model:FindFirstChildOfClass("Humanoid")
+	local humanoid =
+		model:FindFirstChildOfClass("Humanoid")
 
 	if not humanoid then
 		return
 	end
 
-	local head = model:FindFirstChild("Head")
-	local root = model:FindFirstChild("HumanoidRootPart")
+	local head =
+		model:FindFirstChild("Head")
+
+	local root =
+		model:FindFirstChild("HumanoidRootPart")
 
 	local adornee = head or root
 
-	if not adornee or not adornee:IsA("BasePart") then
+	if not adornee
+		or not adornee:IsA("BasePart") then
 		return
 	end
-
-	--==========================================================
-	-- HIGHLIGHT
-	--==========================================================
 
 	local highlight = Instance.new("Highlight")
 	highlight.Name = "CyberESP"
 	highlight.Adornee = model
-	highlight.FillColor = Color3.fromRGB(0, 170, 255)
-	highlight.OutlineColor = Color3.fromRGB(0, 240, 255)
+	highlight.FillColor = Themes[Config.GUITheme].Accent
+	highlight.OutlineColor = Themes[Config.GUITheme].Accent
 	highlight.FillTransparency = 0.65
 	highlight.OutlineTransparency = 0
-	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	highlight.DepthMode =
+		Enum.HighlightDepthMode.AlwaysOnTop
 	highlight.Enabled = Config.ESP
 	highlight.Parent = model
-
-	--==========================================================
-	-- BILLBOARD
-	--==========================================================
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "CyberESPInfo"
@@ -780,10 +1037,6 @@ local function createESP(model)
 	billboard.MaxDistance = 10000
 	billboard.Enabled = Config.ESP
 	billboard.Parent = PlayerGui
-
-	--==========================================================
-	-- NAME
-	--==========================================================
 
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.Name = "Name"
@@ -798,10 +1051,6 @@ local function createESP(model)
 	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
 	nameLabel.Parent = billboard
 
-	--==========================================================
-	-- HEALTH
-	--==========================================================
-
 	local healthLabel = Instance.new("TextLabel")
 	healthLabel.Name = "Health"
 	healthLabel.BackgroundTransparency = 1
@@ -813,10 +1062,6 @@ local function createESP(model)
 	healthLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
 	healthLabel.TextXAlignment = Enum.TextXAlignment.Center
 	healthLabel.Parent = billboard
-
-	--==========================================================
-	-- DISTANCE
-	--==========================================================
 
 	local distanceLabel = Instance.new("TextLabel")
 	distanceLabel.Name = "Distance"
@@ -867,6 +1112,12 @@ local function updateESPText()
 		if data.Highlight then
 			data.Highlight.Enabled =
 				Config.ESP and alive
+
+			data.Highlight.FillColor =
+				Themes[Config.GUITheme].Accent
+
+			data.Highlight.OutlineColor =
+				Themes[Config.GUITheme].Accent
 		end
 
 		if data.Billboard then
@@ -874,21 +1125,14 @@ local function updateESPText()
 				Config.ESP and alive
 		end
 
-		--======================================================
-		-- NAME
-		--======================================================
-
 		if data.NameLabel then
 
 			if Config.ESPNames then
 
-				if targetPlayer then
-					data.NameLabel.Text =
-						targetPlayer.Name
-				else
-					data.NameLabel.Text =
-						model.Name
-				end
+				data.NameLabel.Text =
+					targetPlayer
+					and targetPlayer.Name
+					or model.Name
 
 				data.NameLabel.Visible = true
 
@@ -896,10 +1140,6 @@ local function updateESPText()
 				data.NameLabel.Visible = false
 			end
 		end
-
-		--======================================================
-		-- HEALTH
-		--======================================================
 
 		if data.HealthLabel then
 
@@ -921,14 +1161,17 @@ local function updateESPText()
 					math.clamp(hp / maxHp, 0, 1)
 
 				if percent > 0.6 then
+
 					data.HealthLabel.TextColor3 =
 						Color3.fromRGB(80, 255, 120)
 
 				elseif percent > 0.3 then
+
 					data.HealthLabel.TextColor3 =
 						Color3.fromRGB(255, 210, 60)
 
 				else
+
 					data.HealthLabel.TextColor3 =
 						Color3.fromRGB(255, 70, 70)
 				end
@@ -939,10 +1182,6 @@ local function updateESPText()
 				data.HealthLabel.Visible = false
 			end
 		end
-
-		--======================================================
-		-- DISTANCE
-		--======================================================
 
 		if data.DistanceLabel then
 
@@ -980,10 +1219,6 @@ local function updateESP()
 		return
 	end
 
-	--==========================================================
-	-- PLAYERS
-	--==========================================================
-
 	for _, targetPlayer in ipairs(Players:GetPlayers()) do
 
 		if targetPlayer ~= Player
@@ -992,10 +1227,6 @@ local function updateESP()
 			createESP(targetPlayer.Character)
 		end
 	end
-
-	--==========================================================
-	-- NPC
-	--==========================================================
 
 	for _, object in ipairs(Workspace:GetChildren()) do
 
@@ -1035,9 +1266,14 @@ end)
 
 createSection(Movement, "MOVEMENT")
 
-createToggle(Movement, "Fly", false, function(value)
-	Config.Fly = value
-end)
+createToggle(
+	Movement,
+	"Fly",
+	false,
+	function(value)
+		Config.Fly = value
+	end
+)
 
 createSlider(
 	Movement,
@@ -1050,9 +1286,14 @@ createSlider(
 	end
 )
 
-createToggle(Movement, "Custom WalkSpeed", false, function(value)
-	Config.Speed = value
-end)
+createToggle(
+	Movement,
+	"Custom WalkSpeed",
+	false,
+	function(value)
+		Config.Speed = value
+	end
+)
 
 createSlider(
 	Movement,
@@ -1065,9 +1306,14 @@ createSlider(
 	end
 )
 
-createToggle(Movement, "Custom Jump", false, function(value)
-	Config.Jump = value
-end)
+createToggle(
+	Movement,
+	"Custom Jump",
+	false,
+	function(value)
+		Config.Jump = value
+	end
+)
 
 createSlider(
 	Movement,
@@ -1080,17 +1326,32 @@ createSlider(
 	end
 )
 
-createToggle(Movement, "Noclip", false, function(value)
-	Config.Noclip = value
-end)
+createToggle(
+	Movement,
+	"Noclip",
+	false,
+	function(value)
+		Config.Noclip = value
+	end
+)
 
-createToggle(Movement, "Infinite Jump", false, function(value)
-	Config.InfiniteJump = value
-end)
+createToggle(
+	Movement,
+	"Infinite Jump",
+	false,
+	function(value)
+		Config.InfiniteJump = value
+	end
+)
 
-createToggle(Movement, "BunnyHop", false, function(value)
-	Config.BunnyHop = value
-end)
+createToggle(
+	Movement,
+	"BunnyHop",
+	false,
+	function(value)
+		Config.BunnyHop = value
+	end
+)
 
 --==============================================================
 -- FLY
@@ -1184,6 +1445,8 @@ createButton(
 
 		if Root and SavedPosition then
 			Root.CFrame = SavedPosition
+			Root.AssemblyLinearVelocity = Vector3.zero
+			Root.AssemblyAngularVelocity = Vector3.zero
 		end
 	end
 )
@@ -1192,10 +1455,10 @@ createSection(Teleports, "PLAYERS")
 
 local PlayerList = Instance.new("ScrollingFrame")
 PlayerList.Size = UDim2.new(1, 0, 0, 220)
-PlayerList.BackgroundColor3 = Color3.fromRGB(14, 18, 28)
+PlayerList.BackgroundColor3 = Themes.Cyber.Button
 PlayerList.BorderSizePixel = 0
 PlayerList.ScrollBarThickness = 3
-PlayerList.ScrollBarImageColor3 = Color3.fromRGB(0, 210, 255)
+PlayerList.ScrollBarImageColor3 = Themes.Cyber.Accent
 PlayerList.AutomaticCanvasSize = Enum.AutomaticSize.Y
 PlayerList.CanvasSize = UDim2.new(0, 0, 0, 0)
 PlayerList.ZIndex = 13
@@ -1230,7 +1493,7 @@ local function refreshPlayers()
 
 			local Button = Instance.new("TextButton")
 			Button.Size = UDim2.new(1, 0, 0, 35)
-			Button.BackgroundColor3 = Color3.fromRGB(21, 27, 40)
+			Button.BackgroundColor3 = Themes[Config.GUITheme].Button
 			Button.BorderSizePixel = 0
 			Button.Text =
 				target.DisplayName
@@ -1239,7 +1502,7 @@ local function refreshPlayers()
 				.. "]"
 			Button.Font = Enum.Font.Gotham
 			Button.TextSize = 12
-			Button.TextColor3 = Color3.fromRGB(220, 225, 235)
+			Button.TextColor3 = Themes[Config.GUITheme].Text
 			Button.AutoButtonColor = false
 			Button.ZIndex = 14
 			Button.Parent = PlayerList
@@ -1247,6 +1510,16 @@ local function refreshPlayers()
 			local Corner = Instance.new("UICorner")
 			Corner.CornerRadius = UDim.new(0, 6)
 			Corner.Parent = Button
+
+			Button.MouseEnter:Connect(function()
+				Button.BackgroundColor3 =
+					Themes[Config.GUITheme].ButtonHover
+			end)
+
+			Button.MouseLeave:Connect(function()
+				Button.BackgroundColor3 =
+					Themes[Config.GUITheme].Button
+			end)
 
 			Button.MouseButton1Click:Connect(function()
 
@@ -1258,9 +1531,16 @@ local function refreshPlayers()
 						)
 
 					if targetRoot then
+
 						Root.CFrame =
 							targetRoot.CFrame
 							* CFrame.new(0, 0, 4)
+
+						Root.AssemblyLinearVelocity =
+							Vector3.zero
+
+						Root.AssemblyAngularVelocity =
+							Vector3.zero
 					end
 				end
 			end)
@@ -1296,7 +1576,7 @@ createSlider(
 
 		Config.CameraFOV = value
 
-		if Camera then
+		if Camera and not Config.Freecam then
 			Camera.FieldOfView = value
 		end
 	end
@@ -1346,8 +1626,6 @@ createToggle(
 --==============================================================
 -- FREECAM
 --==============================================================
-
-createSection(World, "FREECAM")
 
 local FreecamConnection
 local FreecamCFrame
@@ -1399,7 +1677,7 @@ local function startFreecam()
 			if move.Magnitude > 0 then
 
 				move =
-					move.Unit * 70 * dt
+					move.Unit * Config.FlySpeed * dt
 
 				FreecamCFrame =
 					FreecamCFrame
@@ -1420,12 +1698,16 @@ local function stopFreecam()
 	end
 
 	if Camera then
+
 		Camera.CameraType =
 			Enum.CameraType.Custom
 
 		if Humanoid then
 			Camera.CameraSubject = Humanoid
 		end
+
+		Camera.FieldOfView =
+			Config.CameraFOV
 	end
 end
 
@@ -1500,6 +1782,8 @@ createButton(
 
 		stopFreecam()
 
+		Config.Freecam = false
+
 		if Humanoid and Camera then
 			Camera.CameraSubject = Humanoid
 		end
@@ -1531,15 +1815,175 @@ createButton(
 	end
 )
 
+--==============================================================
+-- GUI APPEARANCE
+--==============================================================
+
+createSection(Settings, "GUI APPEARANCE")
+
+createButton(
+	Settings,
+	"THEME: CYBER",
+	function()
+
+		Config.GUITheme = "Cyber"
+		applyTheme()
+	end
+)
+
+createButton(
+	Settings,
+	"THEME: PURPLE",
+	function()
+
+		Config.GUITheme = "Purple"
+		applyTheme()
+	end
+)
+
+createButton(
+	Settings,
+	"THEME: RED",
+	function()
+
+		Config.GUITheme = "Red"
+		applyTheme()
+	end
+)
+
+createButton(
+	Settings,
+	"THEME: GREEN",
+	function()
+
+		Config.GUITheme = "Green"
+		applyTheme()
+	end
+)
+
+createButton(
+	Settings,
+	"THEME: ORANGE",
+	function()
+
+		Config.GUITheme = "Orange"
+		applyTheme()
+	end
+)
+
+createSlider(
+	Settings,
+	"GUI Transparency",
+	0,
+	0.6,
+	Config.GUITransparency,
+	function(value)
+
+		Config.GUITransparency = value
+
+		Main.BackgroundTransparency = value
+	end
+)
+
+createSlider(
+	Settings,
+	"GUI Text Brightness",
+	0.5,
+	1,
+	Config.GUITextBrightness,
+	function(value)
+
+		Config.GUITextBrightness = value
+
+		local Theme = Themes[Config.GUITheme]
+
+		local function scaleColor(color)
+
+			return Color3.new(
+				math.clamp(color.R * value, 0, 1),
+				math.clamp(color.G * value, 0, 1),
+				math.clamp(color.B * value, 0, 1)
+			)
+		end
+
+		for _, button in ipairs(UIObjects.Buttons) do
+			if button and button.Parent then
+				button.TextColor3 =
+					scaleColor(Theme.Text)
+			end
+		end
+
+		for _, toggle in ipairs(UIObjects.Toggles) do
+
+			if toggle.Button and toggle.Button.Parent then
+
+				for _, child in ipairs(
+					toggle.Button:GetChildren()
+				) do
+
+					if child:IsA("TextLabel") then
+						child.TextColor3 =
+							scaleColor(Theme.Text)
+					end
+				end
+			end
+		end
+
+		for _, slider in ipairs(UIObjects.Sliders) do
+
+			if slider.Label then
+				slider.Label.TextColor3 =
+					scaleColor(Theme.Text)
+			end
+		end
+	end
+)
+
+createButton(
+	Settings,
+	"RESET GUI STYLE",
+	function()
+
+		Config.GUITheme = "Cyber"
+		Config.GUITransparency = 0
+		Config.GUITextBrightness = 1
+
+		Main.BackgroundTransparency = 0
+
+		applyTheme()
+
+		print("[CyberHub] GUI style reset")
+	end
+)
+
+--==============================================================
+-- CONFIG
+--==============================================================
+
 createSection(Settings, "CONFIG")
+
+local SavedConfig = nil
+
+local function cloneConfig()
+
+	local copy = {}
+
+	for key, value in pairs(Config) do
+		copy[key] = value
+	end
+
+	return copy
+end
 
 createButton(
 	Settings,
 	"SAVE CONFIG",
 	function()
 
+		SavedConfig = cloneConfig()
+
 		_G.CyberAdminConfig =
-			table.clone(Config)
+			table.clone(SavedConfig)
 
 		print("[CyberHub] Config saved")
 	end
@@ -1550,16 +1994,42 @@ createButton(
 	"LOAD CONFIG",
 	function()
 
-		if _G.CyberAdminConfig then
+		if not SavedConfig then
 
-			for key, value in pairs(
-				_G.CyberAdminConfig
-			) do
+			if _G.CyberAdminConfig then
+				SavedConfig =
+					table.clone(_G.CyberAdminConfig)
+			end
+		end
 
+		if SavedConfig then
+
+			for key, value in pairs(SavedConfig) do
 				Config[key] = value
 			end
 
+			applyTheme()
+
+			if Config.Fullbright then
+
+				Lighting.Brightness = 3
+				Lighting.ClockTime = 14
+				Lighting.FogEnd = 100000
+				Lighting.GlobalShadows = false
+
+			end
+
+			if Config.Freecam then
+				startFreecam()
+			else
+				stopFreecam()
+			end
+
 			print("[CyberHub] Config loaded")
+
+		else
+
+			warn("[CyberHub] No saved config")
 		end
 	end
 )
@@ -1573,6 +2043,7 @@ createButton(
 		Config.Speed = false
 		Config.Jump = false
 		Config.Noclip = false
+		Config.BunnyHop = false
 
 		if FlyVelocity then
 			FlyVelocity:Destroy()
@@ -1583,6 +2054,18 @@ createButton(
 			Humanoid.WalkSpeed = 16
 			Humanoid.UseJumpPower = true
 			Humanoid.JumpPower = 50
+		end
+
+		if Character then
+
+			for _, part in ipairs(
+				Character:GetDescendants()
+			) do
+
+				if part:IsA("BasePart") then
+					part.CanCollide = true
+				end
+			end
 		end
 	end
 )
@@ -1606,7 +2089,9 @@ local function getTarget()
 			Camera.ViewportSize.Y / 2
 		)
 
-	for _, object in ipairs(Workspace:GetDescendants()) do
+	for _, object in ipairs(
+		Workspace:GetDescendants()
+	) do
 
 		if object:IsA("Model")
 			and object ~= Character then
@@ -1628,7 +2113,7 @@ local function getTarget()
 						targetPart.Position
 					)
 
-				if visible then
+				if visible and position.Z > 0 then
 
 					local distance =
 						(
@@ -1651,6 +2136,8 @@ local function getTarget()
 
 							params.FilterDescendantsInstances =
 								{Character}
+
+							params.IgnoreWater = true
 
 							local result =
 								Workspace:Raycast(
@@ -1710,24 +2197,24 @@ end
 UIS.InputBegan:Connect(function(input, gameProcessed)
 
 	--==========================================================
-	-- MENU KEY
+	-- MENU KEY 0
 	--==========================================================
 
-	if input.UserInputType == Enum.UserInputType.Keyboard then
+	if input.UserInputType ==
+		Enum.UserInputType.Keyboard then
 
 		if input.KeyCode == Enum.KeyCode.Zero
 			or input.KeyCode == Enum.KeyCode.KeypadZero then
+
+			if UIS:GetFocusedTextBox() then
+				return
+			end
 
 			Main.Visible = not Main.Visible
 
 			FOVCircle.Visible =
 				Main.Visible
 				and Config.AimAssist
-
-			print(
-				"[CyberHub] Menu:",
-				Main.Visible and "OPEN" or "CLOSED"
-			)
 
 			return
 		end
@@ -1760,10 +2247,7 @@ local ESPTextTimer = 0
 
 RunService.RenderStepped:Connect(function(dt)
 
-	--==========================================================
 	-- CHARACTER
-	--==========================================================
-
 	if not Character
 		or not Character.Parent
 		or not Humanoid
@@ -1774,36 +2258,34 @@ RunService.RenderStepped:Connect(function(dt)
 		updateCharacter()
 	end
 
-	--==========================================================
 	-- CAMERA
-	--==========================================================
-
 	Camera = Workspace.CurrentCamera
 
 	if not Camera then
 		return
 	end
 
-	--==========================================================
-	-- FOV
-	--==========================================================
-
+	-- FOV CIRCLE
 	FOVCircle.Size =
 		UDim2.fromOffset(
 			Config.AimFOV * 2,
 			Config.AimFOV * 2
 		)
 
+	FOVCircle.Position =
+		UDim2.fromOffset(
+			Camera.ViewportSize.X / 2,
+			Camera.ViewportSize.Y / 2
+		)
+
 	FOVCircle.Visible =
 		Main.Visible
 		and Config.AimAssist
 
-	--==========================================================
-	-- AIM ASSIST
-	--==========================================================
-
+	-- AIM
 	if Config.AimAssist
-		and Main.Visible then
+		and Main.Visible
+		and not Config.Freecam then
 
 		local target = getTarget()
 
@@ -1812,10 +2294,20 @@ RunService.RenderStepped:Connect(function(dt)
 		end
 	end
 
-	--==========================================================
-	-- WALK SPEED
-	--==========================================================
+	-- CAMERA FOV
+	if not Config.Freecam then
 
+		if math.abs(
+			Camera.FieldOfView
+			- Config.CameraFOV
+		) > 0.1 then
+
+			Camera.FieldOfView =
+				Config.CameraFOV
+		end
+	end
+
+	-- WALK SPEED
 	if Humanoid then
 
 		if Config.Speed then
@@ -1829,10 +2321,7 @@ RunService.RenderStepped:Connect(function(dt)
 				Config.JumpPower
 		end
 
-		--======================================================
 		-- BUNNY HOP
-		--======================================================
-
 		if Config.BunnyHop
 			and Humanoid.FloorMaterial ~= Enum.Material.Air
 			and UIS:IsKeyDown(Enum.KeyCode.Space) then
@@ -1843,10 +2332,7 @@ RunService.RenderStepped:Connect(function(dt)
 		end
 	end
 
-	--==========================================================
 	-- NOCLIP
-	--==========================================================
-
 	if Character and Config.Noclip then
 
 		for _, part in ipairs(
@@ -1859,16 +2345,10 @@ RunService.RenderStepped:Connect(function(dt)
 		end
 	end
 
-	--==========================================================
 	-- FLY
-	--==========================================================
-
 	updateFly()
 
-	--==========================================================
 	-- SPIN
-	--==========================================================
-
 	if Config.SpinBot and Root then
 
 		Root.CFrame =
@@ -1880,24 +2360,21 @@ RunService.RenderStepped:Connect(function(dt)
 			)
 	end
 
-	--==========================================================
 	-- ESP SCAN
-	--==========================================================
-
 	ESPTimer += dt
 
 	if ESPTimer >= 0.4 then
+
 		ESPTimer = 0
+
 		updateESP()
 	end
 
-	--==========================================================
 	-- ESP TEXT
-	--==========================================================
-
 	ESPTextTimer += dt
 
 	if ESPTextTimer >= 0.1 then
+
 		ESPTextTimer = 0
 
 		if Config.ESP then
@@ -1917,7 +2394,7 @@ end
 Pages["Combat"].Visible = true
 
 Buttons["Combat"].BackgroundColor3 =
-	Color3.fromRGB(0, 105, 140)
+	Themes[Config.GUITheme].TabActive
 
 Buttons["Combat"].TextColor3 =
 	Color3.fromRGB(255, 255, 255)
@@ -1971,13 +2448,21 @@ UIS.InputEnded:Connect(function(input)
 end)
 
 --==============================================================
+-- FINAL THEME APPLY
+--==============================================================
+
+applyTheme()
+
+--==============================================================
 -- START
 --==============================================================
 
-Main.Visible = true
+Main.Visible = false
+FOVCircle.Visible = false
 
 print("======================================")
 print("       CYBER ADMIN HUB LOADED")
 print("       PRESS 0 TO OPEN / CLOSE")
-print("       ESP: NAME / HP / DISTANCE")
+print("       GUI THEMES: CYBER / PURPLE")
+print("       RED / GREEN / ORANGE")
 print("======================================")
